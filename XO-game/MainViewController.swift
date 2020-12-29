@@ -21,6 +21,7 @@ class MainViewController: UIViewController {
         
         rootView.playWithHumanButton.addTarget(self, action: #selector(pressPlayButton(_:)), for: .touchUpInside)
         rootView.playWithComputerButton.addTarget(self, action: #selector(pressPlayButton(_:)), for: .touchUpInside)
+        rootView.playBlindButton.addTarget(self, action: #selector(pressPlayButton(_:)), for: .touchUpInside)
     }
     
     @objc
@@ -36,6 +37,9 @@ class MainViewController: UIViewController {
             self.present(gameViewController, animated: true, completion: nil)
         case 2:
             gameViewController.gameMode = .human
+            self.present(gameViewController, animated: true, completion: nil)
+        case 3:
+            gameViewController.gameMode = .blind
             self.present(gameViewController, animated: true, completion: nil)
         default:
             print("error")

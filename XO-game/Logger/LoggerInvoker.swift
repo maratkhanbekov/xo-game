@@ -13,7 +13,6 @@ import Foundation
 internal final class LoggerInvoker {
     
     // MARK: Singleton
-    
     internal static let shared = LoggerInvoker()
     
     // MARK: Private properties
@@ -25,14 +24,12 @@ internal final class LoggerInvoker {
     private var commands: [LogCommand] = []
     
     // MARK: Internal
-    
     internal func addLogCommand(_ command: LogCommand) {
         self.commands.append(command)
         self.executeCommandsIfNeeded()
     }
     
     // MARK: Private
-    
     private func executeCommandsIfNeeded() {
         guard self.commands.count >= batchSize else {
             return
@@ -41,3 +38,5 @@ internal final class LoggerInvoker {
         self.commands = []
     }
 }
+
+

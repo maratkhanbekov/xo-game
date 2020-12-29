@@ -9,7 +9,7 @@
 import UIKit
 
 enum GameMode {
-    case computer, human
+    case computer, human, blind
 }
 
 class GameViewController: UIViewController {
@@ -22,7 +22,6 @@ class GameViewController: UIViewController {
     @IBOutlet var secondPlayerTurnLabel: UILabel!
     @IBOutlet var winnerLabel: UILabel!
     @IBOutlet var restartButton: UIButton!
-    
     
     var gameMode: GameMode?
     var roundCounter = 1
@@ -46,13 +45,10 @@ class GameViewController: UIViewController {
             guard let self = self else { return }
             self.currentState.addMark(at: position)
             if self.currentState.isCompleted {
-                
                 // Если против компьютера
                 guard let gameMode = self.gameMode else { return }
                 if gameMode == .computer {
-                    
                     self.computerMove()
-                    
                 }
                 self.goToNextState()
             }
@@ -62,12 +58,25 @@ class GameViewController: UIViewController {
     private func goToFirstState() {
         let player = Player.first
         
-        // Итак, установка первого состояния — это установка PlayerInputState с первым игроком
-        self.currentState = PlayerInputState(player: .first,
-                                             markViewPrototype: player.markViewPrototype,
-                                             gameViewController: self,
-                                             gameboard: gameboard,
-                                             gameboardView: gameboardView)
+        
+        guard let gameMode = gameMode else { return }
+        
+        if gameMode == .blind {
+            self.currentState = PlayerInputBlindState(player: .first,
+                                                 markViewPrototype: player.markViewPrototype,
+                                                 gameViewController: self,
+                                                 gameboard: gameboard,
+                                                 gameboardView: gameboardView)
+        }
+        else {
+            // Итак, установка первого состояния — это установка PlayerInputState с первым игроком
+            self.currentState = PlayerInputState(player: .first,
+                                                 markViewPrototype: player.markViewPrototype,
+                                                 gameViewController: self,
+                                                 gameboard: gameboard,
+                                                 gameboardView: gameboardView)
+        }
+       
     }
     
     private func goToNextState() {
@@ -94,10 +103,20 @@ class GameViewController: UIViewController {
                                                      gameboardView: gameboardView)
             }
         }
-        else {
+        else if gameMode == .human {
             if let playerInputState = currentState as? PlayerInputState {
                 self.currentState = PlayerInputState(player: playerInputState.player.next,
                                                      markViewPrototype:playerInputState.player.next.markViewPrototype,
+                                                     gameViewController: self,
+                                                     gameboard: gameboard,
+                                                     gameboardView: gameboardView)
+            }
+            
+        }
+        else if gameMode == .blind {
+            if let playerInputBlindState = currentState as? PlayerInputBlindState {
+                self.currentState = PlayerInputBlindState(player: playerInputBlindState.player.next,
+                                                     markViewPrototype:playerInputBlindState.player.next.markViewPrototype,
                                                      gameViewController: self,
                                                      gameboard: gameboard,
                                                      gameboardView: gameboardView)
@@ -109,7 +128,6 @@ class GameViewController: UIViewController {
     }
     
     func computerMove() {
-        
         if let playerInputState = currentState as? PlayerInputState {
             
             // Меняем на следующего игрока - O
@@ -131,11 +149,10 @@ class GameViewController: UIViewController {
                     
                 }
             }
-
-            
             // Ставим случайную метку
             if emptyPositions.count > 0 {
-            self.currentState.addMark(at: GameboardPosition(column: emptyPositions[0].0, row: emptyPositions[0].1))
+                let position = emptyPositions[Int.random(in: 0..<emptyPositions.count)]
+            self.currentState.addMark(at: GameboardPosition(column: position.0, row: position.1))
             }
         }
     }

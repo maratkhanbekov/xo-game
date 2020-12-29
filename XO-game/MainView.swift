@@ -26,6 +26,18 @@ class MainView: UIView {
         return button
     }()
     
+    let playBlindButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("Игра вслепую", for: .normal)
+        button.backgroundColor = .white
+        button.tintColor = .systemGreen
+        button.setTitleColor(.systemGreen, for: .normal)
+        button.layer.cornerRadius = 20
+        button.tag = 3
+        return button
+    }()
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setup()
@@ -51,12 +63,19 @@ class MainView: UIView {
             playWithHumanButton.heightAnchor.constraint(equalToConstant: 40),
             playWithHumanButton.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 30)
         ])
+        NSLayoutConstraint.activate([
+            playBlindButton.centerXAnchor.constraint(equalTo: centerXAnchor),
+            playBlindButton.widthAnchor.constraint(equalToConstant: 280),
+            playBlindButton.heightAnchor.constraint(equalToConstant: 40),
+            playBlindButton.centerYAnchor.constraint(equalTo: centerYAnchor, constant: 90)
+        ])
     }
     
     func setup() {
         backgroundColor = .systemGreen
         addSubview(playWithComputerButton)
         addSubview(playWithHumanButton)
+        addSubview(playBlindButton)
         updateConstraints()
     }
 }

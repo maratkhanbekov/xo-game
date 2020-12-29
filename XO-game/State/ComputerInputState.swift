@@ -44,6 +44,6 @@ public class ComputerInputState: GameState {
         self.gameboardView?.placeMarkView(self.markViewPrototype.copy(), at: position)
         self.isCompleted = true
     }
-    
-    
 }
+
+

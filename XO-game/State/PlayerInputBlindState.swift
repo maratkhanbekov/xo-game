@@ -9,7 +9,7 @@
 import Foundation
 
 
-public class PlayerInputState: GameState {
+public class PlayerInputBlindState: GameState {
 
     
     public private(set) var isCompleted = false
@@ -30,6 +30,24 @@ public class PlayerInputState: GameState {
     
     public func begin() {
         
+        InputInvoker.shared.changePlayerClosure = { [weak self] in
+            self?.isCompleted = true
+        }
+        
+        InputInvoker.shared.drawMarksClosure = { [weak self] command in
+            
+            guard let self = self else { return }
+            
+            self.gameboard?.setPlayer(command.player, at: command.position)
+            
+            if self.gameboardView?.canPlaceMarkView(at: command.position) == false {
+                self.gameboardView?.removeMarkView(at: command.position)
+            }
+            
+            self.gameboardView?.placeMarkView(command.markViewPrototype, at: command.position)
+            self.isCompleted = true
+        }
+        
         switch self.player {
         case .first:
             self.gameViewController?.firstPlayerTurnLabel.isHidden = false
@@ -44,14 +62,9 @@ public class PlayerInputState: GameState {
     public func addMark(at position: GameboardPosition) {
         
         Log(.playerInput(player: self.player, position: position))
+
+        let command = Command(player: self.player, position: position, gameBoard: self.gameboard!, markViewPrototype: self.markViewPrototype.copy())
         
-        guard let gameboardView = self.gameboardView
-              , gameboardView.canPlaceMarkView(at: position)
-        else { return }
-        
-        self.gameboard?.setPlayer(self.player, at: position)
-        self.gameboardView?.placeMarkView(self.markViewPrototype.copy(), at: position)
-        
-        self.isCompleted = true
+        InputInvoker.shared.addCommand(command)
     }
 }
